@@ -1,7 +1,18 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
+from src import cache as c
 
-app = FastAPI()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        yield
+    finally:
+        await c.shutdown()
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/get_last_trading_days")
